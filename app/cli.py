@@ -10,10 +10,15 @@ Session = sessionmaker(bind=engine)
 def cli():
     pass
 
-# Commands for Grocery List
+# Define a validation function for quantity
+def validate_quantity(ctx, param, value):
+     if value is None or value <= 0:
+        raise click.BadParameter('Quantity must be a positive integer.')
+     return value
+  # Commands for Grocery List  
 @cli.command()
 @click.option('-i', '--item', prompt='Item name', help='Item name', required=True)
-@click.option('-q', '--quantity', type=int, prompt='Quantity', help='Item quantity')
+@click.option('-q', '--quantity', type=int, prompt='Quantity', help='Item quantity', callback=validate_quantity)
 def add_grocery(item, quantity):
     """Add an item to the grocery list"""
     session = Session()
@@ -22,6 +27,8 @@ def add_grocery(item, quantity):
     session.commit()
     session.close()
     click.echo('Item added to the grocery list successfully.')
+
+
 
 @cli.command()
 def list_grocery():
@@ -145,6 +152,13 @@ def add_reminder(title, description, due_date):
     session.add(reminder)
     session.commit()
     click.echo('Reminder added successfully.')
+
+    def validate_date(ctx, param, value):
+     try:
+        return datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+     except ValueError:
+        raise click.BadParameter('Invalid date format. Please use the format "YYYY-MM-DD HH:MM:SS".')
+
 
 @cli.command()
 def list_reminders():
