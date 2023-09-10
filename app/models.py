@@ -4,6 +4,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
+
+
 Base = declarative_base()
 
 class GroceryList(Base):
@@ -20,6 +22,13 @@ class Note(Base):
     id = Column(Integer, primary_key=True)
     content = Column(String, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
+
+
+      # Define the foreign key relationship to the Reminder model
+    reminder_id = Column(Integer, ForeignKey('reminders.id'))
+
+    # Establish a relationship to the Reminder model
+    reminder = relationship('Reminder', back_populates='notes')
 
 class Reminder(Base):
     __tablename__ = 'reminders'
