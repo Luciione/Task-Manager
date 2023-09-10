@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-# Import your classes from their respective files
+# Import  classes from their respective files
 from grocery_list import GroceryList
 from reminder import Reminder
 from note import Note
