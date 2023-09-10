@@ -1,10 +1,7 @@
-# models.py
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
-
-
 
 Base = declarative_base()
 
@@ -23,8 +20,7 @@ class Note(Base):
     content = Column(String, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
 
-
-      # Define the foreign key relationship to the Reminder model
+    # Define the foreign key relationship to the Reminder model
     reminder_id = Column(Integer, ForeignKey('reminders.id'))
 
     # Establish a relationship to the Reminder model
@@ -32,6 +28,7 @@ class Note(Base):
 
 class Reminder(Base):
     __tablename__ = 'reminders'
+    notes = relationship('Note', back_populates='reminder')
 
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
