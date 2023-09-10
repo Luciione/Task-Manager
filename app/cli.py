@@ -1,5 +1,6 @@
 # cli.py
 import click
+import datetime
 from sqlalchemy.orm import sessionmaker
 from models import GroceryList, Note, Reminder, engine
 
@@ -40,17 +41,15 @@ def list_grocery():
 @click.option('-q', '--quantity', type=int, prompt='Quantity', help='Item quantity')
 def update_grocery(item, quantity):
     """Update an item in the grocery list"""
-    session = Session()
-    grocery_item = session.query(GroceryList).filter(GroceryList.item == item).first()
+    with Session() as session:
+         grocery_item = session.query(GroceryList).filter(GroceryList.item == item).first()
 
     if not grocery_item:
-        session.close()
         click.echo(f'Item "{item}" not found in the grocery list.')
         return
 
     grocery_item.quantity = quantity
     session.commit()
-    session.close()
     click.echo(f'Item updated successfully: {grocery_item.item}')
 
 @cli.command()
@@ -99,18 +98,16 @@ def list_notes():
 @click.option('-c', '--content', prompt='Note content', help='Note content', required=True)
 def update_note(content):
     """Update a note"""
-    session = Session()
-    note = session.query(Note).filter(Note.content == content).first()
+    with Session() as session:
+      note = session.query(Note).filter(Note.content == content).first()
 
     if not note:
-        session.close()
         click.echo(f'Note with content "{content}" not found.')
         return
 
     new_content = click.prompt('New note content', default=note.content)
     note.content = new_content
     session.commit()
-    session.close()
     click.echo(f'Note updated successfully: {note.content}')
 
 @cli.command()
@@ -137,11 +134,16 @@ def delete_note(content):
 @click.option('-due', '--due_date', prompt='Due date (YYYY-MM-DD HH:MM:SS)', help='Due date')
 def add_reminder(title, description, due_date):
     """Add a reminder"""
-    session = Session()
-    reminder = Reminder(title=title, description=description, due_date=due_date)
+    try:
+        due_date = datetime.datetime.strptime(due_date, '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        click.echo('Invalid date format. Please use the format "YYYY-MM-DD HH:MM:SS"')
+        return
+
+    with Session() as session:
+     reminder = Reminder(title=title, description=description, due_date=due_date)
     session.add(reminder)
     session.commit()
-    session.close()
     click.echo('Reminder added successfully.')
 
 @cli.command()
