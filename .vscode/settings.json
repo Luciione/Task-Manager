@@ -1,0 +1,23 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "driver": "MySQL",
+            "connectString": "sqlite:///task_manager.db",
+            "connectionTimeout": 100,
+            "name": "TM"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "TM",
+            "database": "${workspaceFolder:TM}/app/task_manager.db"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}
