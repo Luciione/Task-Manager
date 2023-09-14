@@ -28,13 +28,15 @@ class Note(Base):
 
 class Reminder(Base):
     __tablename__ = 'reminders'
-    notes = relationship('Note', back_populates='reminder')
-
+    
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
     description = Column(String)
     due_date = Column(DateTime)
     created_at = Column(DateTime, server_default=func.now())
+
+    # Establish a one-to-many relationship with notes
+    notes = relationship('Note', back_populates='reminder')
 
 # Create an SQLAlchemy engine and initialize the database
 engine = create_engine('sqlite:///task_manager.db')
