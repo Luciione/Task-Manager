@@ -1,8 +1,12 @@
 # cli.py
+from grocery_list import GroceryList
+from note import Note
+from reminder import Reminder 
 import click
 import datetime
+from datetime import datetime
 from sqlalchemy.orm import sessionmaker
-from models import GroceryList, Note, Reminder, engine
+from database import engine
 
 Session = sessionmaker(bind=engine)
 
@@ -188,12 +192,25 @@ def update_reminder(title):
     new_title = click.prompt('New reminder title', default=reminder.title)
     new_description = click.prompt('New reminder description', default=reminder.description)
     new_due_date = click.prompt('New due date (YYYY-MM-DD HH:MM:SS)', default=reminder.due_date)
+
+    try:
+        new_due_date = datetime.strptime(new_due_date, '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        click.echo('Invalid date format. Please use the format "YYYY-MM-DD HH:MM:SS"')
+        session.close()
+        return
+
     reminder.title = new_title
     reminder.description = new_description
     reminder.due_date = new_due_date
     session.commit()
+
+    # Reload the reminder after the commit to avoid DetachedInstanceError
+    reminder = session.query(Reminder).filter(Reminder.title == new_title).first()
+
     session.close()
     click.echo(f'Reminder updated successfully: {reminder.title}')
+
 
 @cli.command()
 @click.option('-t', '--title', prompt='Reminder title', help='Reminder title', required=True)
