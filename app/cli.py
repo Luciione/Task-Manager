@@ -1,4 +1,3 @@
-# cli.py
 from grocery_list import GroceryList
 from note import Note
 from reminder import Reminder 
